@@ -28,3 +28,12 @@ def buscar_tarefa(tarefa_id: int):
     if tarefa is None:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
     return tarefa
+
+#tarefa
+@app.post("/tarefas", response_model=Tarefa, status_code=201, tags=["Tarefas"])
+def criar_tarefa(dados: TarefaCreate):
+    global proximo_id
+    tarefa = Tarefa(id=proximo_id, **dados.model_dump())
+    tarefas_db[proximo_id] = tarefa
+    proximo_id += 1
+    return tarefa
