@@ -37,3 +37,12 @@ def criar_tarefa(dados: TarefaCreate):
     tarefas_db[proximo_id] = tarefa
     proximo_id += 1
     return tarefa
+
+#atualiza tarefa
+@app.put("/tarefas/{tarefa_id}", response_model=Tarefa, tags=["Tarefas"])
+def atualizar_tarefa(tarefa_id: int, dados: TarefaUpdate):
+    if tarefa_id not in tarefas_db:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+    tarefa_atualizada = Tarefa(id=tarefa_id, **dados.model_dump())
+    tarefas_db[tarefa_id] = tarefa_atualizada
+    return tarefa_atualizada
