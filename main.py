@@ -14,15 +14,26 @@ proximo_id = 1
 def raiz():
     return {"mensagem": "API de Tarefas no ar!"}
 
-@app.get("/tarefas", response_model=list[Tarefa], tags=["Tarefas"])
+@app.get(
+    "/tarefas",
+    response_model=list[Tarefa],
+    tags=["Tarefas"],
+    summary="Lista todas as tarefas",
+    description="Retorna todas as tarefas. Use ?concluida=true ou ?concluida=false para filtrar.",
+)
 def listar_tarefas(concluida: bool | None = None):
     tarefas = list(tarefas_db.values())
     if concluida is not None:
         tarefas = [t for t in tarefas if t.concluida == concluida]
     return tarefas
 
-
-@app.get("/tarefas/{tarefa_id}", response_model=Tarefa, tags=["Tarefas"])
+@app.get(
+    "/tarefas/{tarefa_id}",
+    response_model=Tarefa,
+    tags=["Tarefas"],
+    summary="Busca uma tarefa pelo ID",
+    responses={404: {"description": "Tarefa não encontrada"}},
+)
 def buscar_tarefa(tarefa_id: int):
     tarefa = tarefas_db.get(tarefa_id)
     if tarefa is None:
@@ -30,7 +41,13 @@ def buscar_tarefa(tarefa_id: int):
     return tarefa
 
 #tarefa
-@app.post("/tarefas", response_model=Tarefa, status_code=201, tags=["Tarefas"])
+@app.post(
+    "/tarefas",
+    response_model=Tarefa,
+    status_code=201,
+    tags=["Tarefas"],
+    summary="Cria uma nova tarefa",
+)
 def criar_tarefa(dados: TarefaCreate):
     global proximo_id
     tarefa = Tarefa(id=proximo_id, **dados.model_dump())
@@ -39,7 +56,13 @@ def criar_tarefa(dados: TarefaCreate):
     return tarefa
 
 #atualiza tarefa
-@app.put("/tarefas/{tarefa_id}", response_model=Tarefa, tags=["Tarefas"])
+@app.put(
+    "/tarefas/{tarefa_id}",
+    response_model=Tarefa,
+    tags=["Tarefas"],
+    summary="Atualiza uma tarefa existente",
+    responses={404: {"description": "Tarefa não encontrada"}},
+)
 def atualizar_tarefa(tarefa_id: int, dados: TarefaUpdate):
     if tarefa_id not in tarefas_db:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
@@ -48,7 +71,13 @@ def atualizar_tarefa(tarefa_id: int, dados: TarefaUpdate):
     return tarefa_atualizada
 
 #deleta a tarefa
-@app.delete("/tarefas/{tarefa_id}", status_code=204, tags=["Tarefas"])
+@app.delete(
+    "/tarefas/{tarefa_id}",
+    status_code=204,
+    tags=["Tarefas"],
+    summary="Remove uma tarefa",
+    responses={404: {"description": "Tarefa não encontrada"}},
+)
 def remover_tarefa(tarefa_id: int):
     if tarefa_id not in tarefas_db:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
