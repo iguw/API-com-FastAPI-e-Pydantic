@@ -7,12 +7,12 @@ class TarefaBase(BaseModel):
     concluida: bool = False
 
 
-"""dados do post"""
 class TarefaCreate(TarefaBase):
+    """Dados de entrada do POST."""
 
- """dados do put"""
 class TarefaUpdate(TarefaBase):
+    """Dados de entrada do PUT."""
 
- """dados de saida."""
 class Tarefa(TarefaBase):
+    """Dados de saída."""
     id: int
